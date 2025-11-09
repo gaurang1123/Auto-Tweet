@@ -1,6 +1,12 @@
-bearer_token = "GET_KEY_FROM_developer.twitter.com/apps"
-api_key = "GET_KEY_FROM_developer.twitter.com/apps"
-api_secret = "GET_KEY_FROM_developer.twitter.com/apps"
-access_token = "GET_KEY_FROM_developer.twitter.com/apps"
-access_token_secret = "GET_KEY_FROM_developer.twitter.com/apps"
-openai_key = "GET_YOUR_OPENAI_API_KEY_FROM_https://platform.openai.com/api-keys"
+from dotenv import load_dotenv
+import os
+
+# Load variables from .env file
+load_dotenv()
+
+bearer_token = os.getenv("BEARER_TOKEN")
+api_key = os.getenv("API_KEY")
+api_secret = os.getenv("API_SECRET")
+access_token = os.getenv("ACCESS_TOKEN")
+access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
+openai_key = os.getenv("OPENAI_KEY")
