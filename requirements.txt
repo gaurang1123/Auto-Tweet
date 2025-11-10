@@ -1,4 +1,0 @@
-tweepy
-schedule
-openai
-python-dotenv
