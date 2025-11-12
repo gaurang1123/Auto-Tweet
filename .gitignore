@@ -7,6 +7,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+node_modules/
+
 # --- Virtual Environment ---
 venv/
 .env/

@@ -1,0 +1,12 @@
+{
+  "name": "auto-tweet",
+  "version": "1.0.0",
+  "scripts": {
+    "post": "node post-tweet.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "puppeteer": "^21.5.0",
+    "twitter-api-v2": "^1.27.0"
+  }
+}

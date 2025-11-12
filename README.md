@@ -1,3 +1,10 @@
+
+# Gemini AI Configuration
+GEMINI_API_KEY=AIzaSyD2sV_WqJ7UTOi7bgWTe6F2fiZhZPj1bko
+GEMINI_PRO_MODEL=gemini-2.5-pro
+GEMINI_FLASH_MODEL=gemini-2.5-flash
+
+
 <div align="center">
 
 # 🐦 Twitter Auto-Post Bot 🤖
