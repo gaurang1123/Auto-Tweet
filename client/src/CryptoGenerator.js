@@ -378,7 +378,9 @@ function CryptoGenerator() {
           {generatedContent && (
             <div style={{ marginTop: '15px' }}>
               <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
-                <strong>Thread Length:</strong> {generatedContent.split('\n\n').length} tweets
+                <strong>Thread Length:</strong> {generatedContent.split('Tweet ').length - 1} tweets
+                <br />
+                <strong>Total Characters:</strong> {generatedContent.length}
               </div>
               <button 
                 onClick={saveToSchedule}

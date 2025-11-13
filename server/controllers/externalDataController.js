@@ -167,17 +167,13 @@ const externalDataController = {
 
       // Get crypto-specific data
       if (niche === 'crypto') {
-        const [prices, trending, news, defi, twitterTrends] = await Promise.allSettled([
-          includePrices ? externalDataController.getCryptoPrices() : Promise.resolve({}),
+        const [trending, defi, twitterTrends] = await Promise.allSettled([
           externalDataController.getTrendingCrypto(),
-          includeNews ? externalDataController.getTrendingNews(5) : Promise.resolve([]),
           externalDataController.getDefiData(),
           externalDataController.getTwitterTrending()
         ]);
 
-        context.prices = prices.status === 'fulfilled' ? prices.value : {};
         context.trending = trending.status === 'fulfilled' ? trending.value : [];
-        context.news = news.status === 'fulfilled' ? news.value : [];
         context.defi = defi.status === 'fulfilled' ? defi.value.slice(0, 5) : [];
         context.twitterTrends = twitterTrends.status === 'fulfilled' ? twitterTrends.value : [];
       }
@@ -202,27 +198,9 @@ const externalDataController = {
   generatePromptContext: (context) => {
     let prompt = `\n\nCurrent Market Context (${new Date().toLocaleDateString()}):\n`;
 
-    // Add price data
-    if (context.prices && Object.keys(context.prices).length > 0) {
-      prompt += `\nPrices:\n`;
-      Object.entries(context.prices).forEach(([coin, data]) => {
-        const change = data.usd_24h_change > 0 ? `+${data.usd_24h_change.toFixed(2)}%` : `${data.usd_24h_change.toFixed(2)}%`;
-        prompt += `- ${coin}: $${data.usd} (${change} 24h)\n`;
-      });
-    }
-
     // Add trending coins
     if (context.trending && context.trending.length > 0) {
       prompt += `\nTrending: ${context.trending.map(coin => `$${coin.symbol}`).join(', ')}\n`;
-    }
-
-    // Add trending news headlines with sources
-    if (context.news && context.news.length > 0) {
-      prompt += `\nBreaking/Trending News:\n`;
-      context.news.slice(0, 4).forEach(article => {
-        const timeAgo = externalDataController.getTimeAgo(article.pubDate);
-        prompt += `- ${article.title} (${article.source} - ${timeAgo})\n`;
-      });
     }
 
     // Add Twitter trending topics

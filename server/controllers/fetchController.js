@@ -99,16 +99,38 @@ const fetchController = {
             lastTimestamp: user.lastPostTimestamp ? user.lastPostTimestamp.toISOString() : null
           });
           
-          // Add delay between requests
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Add delay between requests (increased for rate limiting)
+          await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
           
         } catch (error) {
-          errors.push(`Error fetching @${user.username}: ${error.message}`);
+          console.error(`Error fetching @${user.username}:`, {
+            message: error.message,
+            code: error.code,
+            status: error.status,
+            data: error.data
+          });
+          
+          let errorMessage = `Error fetching @${user.username}: ${error.message}`;
+          
+          // Handle specific Twitter API errors
+          if (error.code === 429) {
+            errorMessage = `Rate limit exceeded for @${user.username}. Please wait 15 minutes before fetching again.`;
+            // Add longer delay after rate limit
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          } else if (error.code === 401) {
+            errorMessage = `Authentication failed for @${user.username}. Check API credentials.`;
+          } else if (error.code === 403) {
+            errorMessage = `Access forbidden for @${user.username}. User may be private or suspended.`;
+          } else if (error.code === 404) {
+            errorMessage = `User @${user.username} not found or account suspended.`;
+          }
+          
+          errors.push(errorMessage);
           results.push({
             username: user.username,
             tag: user.tag,
             status: 'error',
-            message: error.message,
+            message: errorMessage,
             tweets: [],
             newTweets: 0,
             savedTweets: 0
@@ -122,7 +144,11 @@ const fetchController = {
         totalNewTweets: totalTweetsFetched,
         totalSavedTweets: totalTweetsSaved,
         results,
-        errors
+        errors,
+        rateLimitInfo: {
+          message: "Twitter API has rate limits. If you see 429 errors, wait 15 minutes before fetching again.",
+          recommendation: "Fetch posts less frequently to avoid rate limits"
+        }
       });
       
     } catch (error) {

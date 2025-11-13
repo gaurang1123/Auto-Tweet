@@ -12,6 +12,8 @@ function PostSelector() {
   const [contextEditor, setContextEditor] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [manualPost, setManualPost] = useState({ text: '', author: '', tag: 'influencer' });
 
   const loadPosts = async () => {
     setLoading(true);
@@ -23,6 +25,24 @@ function PostSelector() {
       toast.error('Error loading posts');
     }
     setLoading(false);
+  };
+
+  const addManualPost = async () => {
+    if (!manualPost.text.trim() || !manualPost.author.trim()) {
+      toast.warning('Please fill in text and author');
+      return;
+    }
+
+    try {
+      await axios.post(`${API_URL}/manual-posts`, manualPost);
+      toast.success('Manual post added successfully');
+      setManualPost({ text: '', author: '', tag: 'influencer' });
+      setShowManualModal(false);
+      loadPosts(); // Refresh posts
+    } catch (error) {
+      console.error('Error adding manual post:', error);
+      toast.error('Error adding manual post');
+    }
   };
 
   const togglePostSelection = (post) => {
@@ -195,6 +215,18 @@ function PostSelector() {
           <span style={{ padding: '8px 12px', backgroundColor: '#e9ecef', borderRadius: '4px' }}>
             Selected: {selectedPosts.length}
           </span>
+          <button 
+            onClick={() => setShowManualModal(true)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px'
+            }}
+          >
+            ➕ Add Manual Post
+          </button>
           {selectedPosts.length > 0 && (
             <button 
               onClick={openEditor}
@@ -352,6 +384,116 @@ function PostSelector() {
               <div>💬 {viewingPost.metrics.reply_count} replies</div>
               <div>📅 {new Date(viewingPost.created_at).toLocaleString()}</div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Post Modal */}
+      {showManualModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '500px',
+            width: '90%'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3>Add Manual Post</h3>
+              <button
+                onClick={() => setShowManualModal(false)}
+                style={{
+                  padding: '4px 8px',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '3px'
+                }}
+              >
+                Close
+              </button>
+            </div>
+            
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Author (without @):
+              </label>
+              <input
+                value={manualPost.author}
+                onChange={(e) => setManualPost(prev => ({ ...prev, author: e.target.value }))}
+                placeholder="cryptowithkhan"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px'
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Tag:
+              </label>
+              <select
+                value={manualPost.tag}
+                onChange={(e) => setManualPost(prev => ({ ...prev, tag: e.target.value }))}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px'
+                }}
+              >
+                <option value="influencer">Influencer</option>
+                <option value="company">Company</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                Post Text:
+              </label>
+              <textarea
+                value={manualPost.text}
+                onChange={(e) => setManualPost(prev => ({ ...prev, text: e.target.value }))}
+                placeholder="Paste the tweet content here..."
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  minHeight: '100px',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+
+            <button
+              onClick={addManualPost}
+              style={{
+                width: '100%',
+                padding: '10px',
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                fontSize: '16px'
+              }}
+            >
+              Add Post
+            </button>
           </div>
         </div>
       )}

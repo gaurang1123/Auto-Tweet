@@ -13,6 +13,7 @@ const analysisRoutes = require('./routes/analysisRoutes');
 const externalRoutes = require('./routes/externalRoutes');
 const scheduledPostRoutes = require('./routes/scheduledPostRoutes');
 const cryptoPromptRoutes = require('./routes/cryptoPromptRoutes');
+const manualPostRoutes = require('./routes/manualPostRoutes');
 const { PostedTweet } = require('./models/User');
 const { Tweet } = require('./models/Tweet');
 
@@ -32,6 +33,7 @@ app.use('/api', analysisRoutes);
 app.use('/api', externalRoutes);
 app.use('/api/scheduled-posts', scheduledPostRoutes);
 app.use('/api/crypto', cryptoPromptRoutes);
+app.use('/api/manual-posts', manualPostRoutes);
 
 // Auto-cleanup old data
 const cleanupOldData = async () => {
